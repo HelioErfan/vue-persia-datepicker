@@ -1,15 +1,35 @@
 <script setup>
 defineProps(
     {
-        calendarTitle: []
+        calendarTitle: Array
     }
 )
 defineEmits(['prev-month', 'next-month']);
+
+function createRipple(event) {
+    const button = event.currentTarget;
+
+    const ripple = document.createElement("span");
+    ripple.classList.add("ripple");
+
+    const rect = button.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    ripple.style.width = ripple.style.height = size + "px";
+    ripple.style.left = event.clientX - rect.left - size / 2 + "px";
+    ripple.style.top = event.clientY - rect.top - size / 2 + "px";
+
+    const oldRipple = button.querySelector(".ripple");
+    if (oldRipple) oldRipple.remove();
+
+    button.appendChild(ripple);
+
+    setTimeout(() => ripple.remove(), 600)
+}
 </script>
 <template>
     <div class="vue-persia-datepicker__header">
         <div class="vue-persia-datepicker__header_calendar_days">
-            <button @click="$emit('prev-month')">
+            <button @click="(event) => { createRipple(event); $emit('prev-month') }">
                 <slot name="prev-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                         <path
@@ -29,7 +49,7 @@ defineEmits(['prev-month', 'next-month']);
                     </strong>
                 </p>
             </div>
-            <button @click="$emit('next-month')">
+            <button @click="(event) => { createRipple(event); $emit('next-month') }">
                 <slot name="next-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                         <path
