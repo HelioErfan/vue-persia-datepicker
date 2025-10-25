@@ -4,6 +4,7 @@ defineProps(
         calendarTitle: []
     }
 )
+defineEmits(['prev-month', 'next-month']);
 </script>
 <template>
     <div class="vue-persia-datepicker__header">

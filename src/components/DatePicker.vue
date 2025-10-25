@@ -26,13 +26,30 @@ const cuurentYearMonth = ref(yearMonth)
 const calendar = computed(() => jalali.calendar(cuurentYearMonth.value))
 
 const dateHeaderTitle = computed(() => calendar.value.title.split(' '))
+
+const updateCalendar = (direction) => {
+    const [year, month] = cuurentYearMonth.value.split('-').map(Number);
+    let newMonth = direction === 'next' ? month + 1 : month - 1;
+    let newYear = year;
+
+    if (newMonth > 12) {
+        newMonth = 1;
+        newYear += 1;
+    } else if (newMonth < 1) {
+        newMonth = 12;
+        newYear -= 1;
+    }
+    cuurentYearMonth.value = `${newYear}-${newMonth.toString().padStart(2, '0')}`;
+}
 </script>
 
 <template>
     <div class="vue-persia-datepicker__container">
         <div>
-            <CalendarHeader
-                :calendarTitle="dateHeaderTitle"
+            <CalendarHeader 
+                :calendarTitle="dateHeaderTitle" 
+                @prev-month="updateCalendar('prev')"
+                @next-month="updateCalendar('next')" 
             />
         </div>
     </div>
