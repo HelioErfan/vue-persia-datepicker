@@ -3,6 +3,7 @@ import { ref, computed, watch } from 'vue'
 import { JalaliDateTime } from '@webilix/jalali-date-time';
 import moment from 'moment-jalaali';
 import CalendarHeader from './CalendarHeader.vue'
+import CalendarDays from './CalendarDays.vue';
 
 const config = {
     timezone: 'Asia/Tehran',
@@ -21,14 +22,14 @@ const currentDate = today.split(' ')[0]
 
 const yearMonth = today.split(' ')[0].split('/').slice(0, 2).join('-')
 
-const cuurentYearMonth = ref(yearMonth)
+const currentYearMonth = ref(yearMonth)
 
-const calendar = computed(() => jalali.calendar(cuurentYearMonth.value))
+const calendar = computed(() => jalali.calendar(currentYearMonth.value))
 
 const dateHeaderTitle = computed(() => calendar.value.title.split(' '))
 
 const updateCalendar = (direction) => {
-    const [year, month] = cuurentYearMonth.value.split('-').map(Number);
+    const [year, month] = currentYearMonth.value.split('-').map(Number);
     let newMonth = direction === 'next' ? month + 1 : month - 1;
     let newYear = year;
 
@@ -39,8 +40,34 @@ const updateCalendar = (direction) => {
         newMonth = 12;
         newYear -= 1;
     }
-    cuurentYearMonth.value = `${newYear}-${newMonth.toString().padStart(2, '0')}`;
+    currentYearMonth.value = `${newYear}-${newMonth.toString().padStart(2, '0')}`;
 }
+
+const calendarDays = computed( () => {
+    const [year, month] = currentYearMonth.value.split('-').map(Number);
+    const daysInMonth = jalali.daysInMonth(currentYearMonth.value);
+    const firstdayOfEachMonth = `${year}-${month}-01`;
+    const miladDate = moment(firstdayOfEachMonth,'jYYYY/jMM/jDD').toDate();
+    const firstDayOfWeek = jalali.dayOfWeek(miladDate);
+    const days = [];
+
+    // Add empty days at the start
+    for(let i = 0; i < firstDayOfWeek; i++) {
+        days.push({day: '', date: `empty-start-${i}`});
+    }
+
+    // Add actual days of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+        days.push({day, date: dateStr})
+    }
+
+    // Add empty days at the end to complete last week
+    while (days.length % 7 !== 0) {
+        days.push({day: '', date: `empty-end-${days.length}`});
+    }
+    return days;
+});
 </script>
 
 <template>
@@ -50,6 +77,11 @@ const updateCalendar = (direction) => {
                 :calendarTitle="dateHeaderTitle" 
                 @prev-month="updateCalendar('prev')"
                 @next-month="updateCalendar('next')" 
+            />
+        </div>
+        <div>
+            <CalendarDays
+                :calendar-days="calendarDays"
             />
         </div>
     </div>
