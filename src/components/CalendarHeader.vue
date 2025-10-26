@@ -1,10 +1,15 @@
 <script setup>
 defineProps(
     {
-        calendarTitle: Array
+        calendarTitle: Array,
+        viewMode: {
+            days: String,
+            months: String,
+            years: String
+        }
     }
 )
-defineEmits(['prev-month', 'next-month']);
+defineEmits(['prev-month', 'next-month', 'toggle-view']);
 
 function createRipple(event) {
     const button = event.currentTarget;
@@ -27,8 +32,8 @@ function createRipple(event) {
 }
 </script>
 <template>
-    <div class="vue-persia-datepicker__header">
-        <div class="vue-persia-datepicker__header_calendar_days">
+    <div class="vue-persia-datepicker__header" :class="`${viewMode}-mode`">
+        <div v-if="viewMode === 'days'" class="vue-persia-datepicker__header_calendar_days">
             <button @click="(event) => { createRipple(event); $emit('prev-month') }">
                 <slot name="prev-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -44,8 +49,8 @@ function createRipple(event) {
             <div>
                 <p style="margin: 0;">
                     <strong class="vue-persia-datepicker__header__month_year">
-                        <span>{{ calendarTitle[0] }}</span>
-                        <span>{{ calendarTitle[1] }}</span>
+                        <span @click="$emit('toggle-view', 'months')">{{ calendarTitle[0] }}</span>
+                        <span @click="$emit('toggle-view', 'years')">{{ calendarTitle[1] }}</span>
                     </strong>
                 </p>
             </div>
@@ -58,6 +63,28 @@ function createRipple(event) {
                         <path
                             d="M13.2599 16.28C13.0699 16.28 12.8799 16.21 12.7299 16.06L9.19992 12.53C8.90992 12.24 8.90992 11.76 9.19992 11.47L12.7299 7.94003C13.0199 7.65003 13.4999 7.65003 13.7899 7.94003C14.0799 8.23003 14.0799 8.71003 13.7899 9.00003L10.7899 12L13.7899 15C14.0799 15.29 14.0799 15.77 13.7899 16.06C13.6499 16.21 13.4599 16.28 13.2599 16.28Z"
                             fill="#99A0AE" />
+                    </svg>
+                </slot>
+            </button>
+        </div>
+        <div v-else class="vue-persia-datepicker__header_calendar_months">
+            <div>
+                <p style="margin: 0;">
+                    <strong class="vue-persia-datepicker__header__month_year">
+                        <span @click="$emit('toggle-view', 'months')">{{ calendarTitle[0] }}</span>
+                        <span @click="$emit('toggle-view', 'years')">{{ calendarTitle[1] }}</span>
+                    </strong>
+                </p>
+            </div>
+            <button @click="(event) => { createRipple(event); $emit('toggle-view', viewMode === 'years' ? 'months' : 'days') }">
+                <slot name="arrow-left-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M10.1006 18.6003C9.80775 18.8932 9.33288 18.8932 9.03998 18.6003L2.96998 12.5303C2.82933 12.3896 2.75031 12.1989 2.75031 11.9999C2.75031 11.801 2.82933 11.6103 2.96998 11.4696L9.03998 5.39962C9.33288 5.10673 9.80775 5.10673 10.1006 5.39962C10.3935 5.69251 10.3935 6.16739 10.1006 6.46028L4.56097 11.9999L10.1006 17.5396C10.3935 17.8325 10.3935 18.3074 10.1006 18.6003Z"
+                            fill="#525866" />
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M21.25 12C21.25 12.4142 20.9142 12.75 20.5 12.75L3.67 12.75C3.25579 12.75 2.92 12.4142 2.92 12C2.92 11.5858 3.25579 11.25 3.67 11.25L20.5 11.25C20.9142 11.25 21.25 11.5858 21.25 12Z"
+                            fill="#525866" />
                     </svg>
                 </slot>
             </button>

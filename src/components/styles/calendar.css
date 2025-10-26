@@ -9,6 +9,7 @@
     --calendar-select-bg-color: #335CFF;
     --calendar-select-text-color: #ffffff;
     --calendar-current: #335CFF;
+    --calendar-month_Year_item-bg-color: #F5F7FA;
 }
 
 .fade-enter-active, .fade-leave-active {
@@ -31,7 +32,7 @@
     border-radius: var(--calendar-border-radius);
     overflow: hidden;
     width: 300px;
-    height: 300px;
+    height: auto;
 }
 .vue-persia-datepicker__header {
     padding: var(--calendar-header-padding);
@@ -40,7 +41,8 @@
     border-radius: var(--calendar-header-border-radius);
     box-shadow: 0px 1px 2px 0px rgba(10, 13, 20, 0.03);
 }
-.vue-persia-datepicker__header .vue-persia-datepicker__header_calendar_days {
+
+.vue-persia-datepicker__header :is(.vue-persia-datepicker__header_calendar_days, .vue-persia-datepicker__header_calendar_months) {
     display: flex;
     flex-direction: row-reverse;
     justify-content: space-between;
@@ -57,7 +59,7 @@
     cursor: pointer;
 }
 
-.vue-persia-datepicker__header_calendar_days button {
+:is(.vue-persia-datepicker__header_calendar_days, .vue-persia-datepicker__header_calendar_months) button {
     position: relative;
     overflow: hidden;
     display: inline-flex;
@@ -135,4 +137,25 @@
 }
 .vue-persia-datepicker__calendar_day_selected .vue-persia-datepicker__calendar_current_dot {
     background-color: var(--calendar-select-text-color);
+}
+
+/* Month Styles */
+.vue-persia-datepicker__calendar_month_grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    text-align: center;
+    align-items: center;
+    direction: rtl;
+}
+.vue-persia-datepicker__calendar_month_grid .vue-persia-datepicker__calendar_month_item {
+    background-color: var(--calendar-month_Year_item-bg-color);
+    padding: 12px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+}
+.vue-persia-datepicker__calendar_month_grid .vue-persia-datepicker__calendar_month_item:hover {
+    border-color: var(--calendar-border-color);
 }

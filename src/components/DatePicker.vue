@@ -4,6 +4,7 @@ import { JalaliDateTime } from '@webilix/jalali-date-time';
 import moment from 'moment-jalaali';
 import CalendarHeader from './CalendarHeader.vue'
 import CalendarDays from './CalendarDays.vue';
+import MonthSelector from './MonthSelector.vue'
 
 const config = {
     timezone: 'Asia/Tehran',
@@ -17,6 +18,8 @@ const config = {
 const jalali = JalaliDateTime(config)
 
 const today = jalali.now()
+
+const viewMode = ref('days')
 
 const currentDate = today.split(' ')[0]
 
@@ -87,18 +90,24 @@ const handleDaySelected = (day) => {
         selectedDate.value = `${year}/${month.padStart(2,'0')}/${day.split('-')[2].padStart(2,'0')}`;
     }
 }
+
+const toggleView = (view) => {
+    viewMode.value = view;
+}
 </script>
 
 <template>
     <div class="vue-persia-datepicker__container">
         <div>
             <CalendarHeader 
-                :calendarTitle="dateHeaderTitle" 
+                :calendarTitle="dateHeaderTitle"
+                :viewMode="viewMode" 
                 @prev-month="updateCalendar('prev')"
                 @next-month="updateCalendar('next')" 
+                @toggle-view="toggleView"
             />
         </div>
-        <div>
+        <div v-show="viewMode === 'days'">
             <CalendarDays
                 :calendar-days="calendarDays"
                 :selected-date:="selectedDate"
@@ -106,7 +115,11 @@ const handleDaySelected = (day) => {
                 @selected-day="handleDaySelected"
             />
         </div>
+        <div v-show="viewMode === 'months'">
+            <MonthSelector/>
+        </div>
     </div>
+    <p>{{ selectedDate }}</p>
 </template>
 
 <style src="./styles/calendar.css"></style>
