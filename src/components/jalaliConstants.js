@@ -1,4 +1,4 @@
-export default useJalaliMonths = () => {
+export default function useJalaliMonths() {
     return [
         { name: 'فروردین', value: '01' },
         { name: 'اردیبهشت', value: '02' },
