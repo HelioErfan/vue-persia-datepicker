@@ -28,6 +28,18 @@ const calendar = computed(() => jalali.calendar(currentYearMonth.value))
 
 const dateHeaderTitle = computed(() => calendar.value.title.split(' '))
 
+const selectedDate = ref('');
+
+const initializeDate = (defaultDate) => {
+    if(defaultDate) {
+        selectedDate.value = defaultDate;
+        currentYearMonth.value = defaultDate.split('/').slice(0,2).join('-');
+    } else {
+        selectedDate.value = null;
+        currentYearMonth.value = today.split(' ')[0].split('/').slice(0, 2).join('-');
+    }
+}
+
 const updateCalendar = (direction) => {
     const [year, month] = currentYearMonth.value.split('-').map(Number);
     let newMonth = direction === 'next' ? month + 1 : month - 1;
@@ -68,6 +80,13 @@ const calendarDays = computed( () => {
     }
     return days;
 });
+
+const handleDaySelected = (day) => {
+    if(day) {
+        const [year, month] = currentYearMonth.value.split('-');
+        selectedDate.value = `${year}/${month.padStart(2,'0')}/${day.split('-')[2].padStart(2,'0')}`;
+    }
+}
 </script>
 
 <template>
@@ -82,6 +101,8 @@ const calendarDays = computed( () => {
         <div>
             <CalendarDays
                 :calendar-days="calendarDays"
+                :selected-date:="selectedDate"
+                @selected-day="handleDaySelected"
             />
         </div>
     </div>

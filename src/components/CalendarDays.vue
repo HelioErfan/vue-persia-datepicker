@@ -1,15 +1,39 @@
 <script setup>
-import { computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 
 
 const props = defineProps({
     calendarDays: {
         day: Number | String,
         date: String
-    }
+    },
+    selectedDate: String
 })
 
+const emit = defineEmits(['selected-day'])
+
 const weekdays = ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج']
+
+const selectedDay = ref('');
+
+const selectDay = (day) => {
+    if(day.day) {
+        selectedDay.value = day.date
+        emit('selected-day', day.date)
+    }
+}
+
+watch(
+    () => props.selectedDate,
+    (newDate) => {
+        if(newDate) {
+            selectDay.value = newDate.replace(/\//g, '-');
+        } else {
+            selectedDay.value = null;
+        }
+    },
+    { immediate: true }
+)
 
 const calendarKey = computed(() => {
     const firstRealDay = props.calendarDays.find(day => !!day.day);
@@ -24,9 +48,11 @@ const calendarKey = computed(() => {
         <transition name="fade" mode="out-in">
             <div :key="calendarKey" class="vue-persia-datepicker__calendar_days_weekdays">
                 <div 
-                    class="vue-persia-datepicker__calendar_day" 
                     v-for="(day, index) in calendarDays"
+                    class="vue-persia-datepicker__calendar_day"
+                    :class="{ empty: !day.day, 'vue-persia-datepicker__calendar_day_selected': selectedDay === day.date }" 
                     :key="`${day.date || 'empty'}-${index}`"
+                    @click="selectDay(day)"
                     >
                     <span>{{ day.day || '' }}</span>
                 </div>
