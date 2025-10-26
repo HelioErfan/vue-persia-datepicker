@@ -42,7 +42,7 @@ function createRipple(event) {
                 </slot>
             </button>
             <div>
-                <p>
+                <p style="margin: 0;">
                     <strong class="vue-persia-datepicker__header__month_year">
                         <span>{{ calendarTitle[0] }}</span>
                         <span>{{ calendarTitle[1] }}</span>

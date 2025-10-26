@@ -102,6 +102,7 @@ const handleDaySelected = (day) => {
             <CalendarDays
                 :calendar-days="calendarDays"
                 :selected-date:="selectedDate"
+                :current-day="currentDate"
                 @selected-day="handleDaySelected"
             />
         </div>
