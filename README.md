@@ -14,7 +14,7 @@ A Vue.js 3 component for displaying and selecting dates in the Jalali (Persian) 
 
 Before using Vue Persia Datepicker, ensure that you have the following installed:
 
-*   **Node.js:**  Version 16 or higher is recommended.
+*   **Node.js:**  Version 18 or higher is recommended.
 *   **npm or Yarn:** Package manager.
 *   **Vue.js:** Version 3.x
 
@@ -127,10 +127,6 @@ Contributions are welcome!  Here's how you can contribute:
 3.  Implement your changes.
 4.  Write tests to ensure your changes are working correctly.
 5.  Submit a pull request with a clear description of your changes.
-
-## License Information
-
-This project has no license specified. All rights are reserved.
 
 ## Acknowledgments
 
