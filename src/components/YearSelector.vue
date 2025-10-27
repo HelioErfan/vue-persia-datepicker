@@ -50,7 +50,7 @@ const selectYear = (year) => {
             @click="selectYear(year)"
         >
             <span>{{ year.name }}</span>
-            <span v-if="isCurrentYear(year.value)" class="vue-persia-datepicker__calendar_current_dot"></span>
+            <span v-if="isCurrentYear(year.value)" class="vue-persia-datepicker__calendar_current_dot"/>
         </div>
     </div>
 </template>

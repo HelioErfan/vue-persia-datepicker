@@ -45,11 +45,11 @@ const selectMonth = (month) => {
             v-for="month in jalaliConstants" 
             :key="month.value" 
             class="vue-persia-datepicker__calendar_month_item"
-            :class="{ 'vue-persia-datepicker__calendar_month_selected': selectMonth === month.value, 'vue-persia-datepicker__calendar_current_month': isCurrentMonth(month.value) }"
+            :class="{ 'vue-persia-datepicker__calendar_month_selected': selectedMonth === month.value, 'vue-persia-datepicker__calendar_current_month': isCurrentMonth(month.value) }"
             @click="selectMonth(month)"
             >
             <span>{{ month.name }}</span>
-            <span v-if="isCurrentMonth(month.value)" class="vue-persia-datepicker__calendar_current_dot"></span>
+            <span v-if="isCurrentMonth(month.value)" class="vue-persia-datepicker__calendar_current_dot"/>
         </div>
     </div>
 </template>

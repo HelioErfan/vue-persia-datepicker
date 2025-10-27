@@ -168,7 +168,6 @@ const toggleView = (view) => {
             />
         </div>
     </div>
-    <p>{{ selectedDate }}</p>
 </template>
 
 <style src="./styles/calendar.css"></style>
