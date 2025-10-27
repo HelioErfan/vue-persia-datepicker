@@ -1,4 +1,3 @@
-md
 # Vue Persia Datepicker
 
 A Vue.js 3 component for displaying and selecting dates in the Jalali (Persian) calendar.
