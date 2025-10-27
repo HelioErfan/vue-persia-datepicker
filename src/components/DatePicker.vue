@@ -5,6 +5,7 @@ import moment from 'moment-jalaali';
 import CalendarHeader from './CalendarHeader.vue'
 import CalendarDays from './CalendarDays.vue';
 import MonthSelector from './MonthSelector.vue'
+import YearSelector from './YearSelector.vue';
 
 const props = defineProps(
     {
@@ -109,6 +110,12 @@ const handleMonthSelected = (month) => {
     viewMode.value = 'days';
 }
 
+const handleYearSelected = (year) => {
+    const [,month] = currentYearMonth.value.split('-');
+    currentYearMonth.value = `${year}-${month}`;
+    viewMode.value = 'months';
+}
+
 const handleViewSelected = (value, type) => {
     if (type === 'month') {
         const [year] = currentYearMonth.value.split('-');
@@ -151,6 +158,13 @@ const toggleView = (view) => {
                 :current-month="currentDate"
                 :view-selected="handleViewSelected"
                 @month-selected="handleMonthSelected"
+            />
+        </div>
+        <div v-show="viewMode === 'years'">
+            <YearSelector
+                :current-year-month="currentYearMonth"
+                :current-year="currentDate"
+                @year-selected="handleYearSelected"
             />
         </div>
     </div>
