@@ -6,6 +6,12 @@ import CalendarHeader from './CalendarHeader.vue'
 import CalendarDays from './CalendarDays.vue';
 import MonthSelector from './MonthSelector.vue'
 
+const props = defineProps(
+    {
+        defaltDate: String
+    }
+)
+
 const config = {
     timezone: 'Asia/Tehran',
     locale: 'en',
@@ -42,6 +48,12 @@ const initializeDate = (defaultDate) => {
         currentYearMonth.value = today.split(' ')[0].split('/').slice(0, 2).join('-');
     }
 }
+
+initializeDate(props.defaltDate);
+
+watch(() => props.defaltDate, (newDate) => {
+    initializeDate(newDate)
+})
 
 const updateCalendar = (direction) => {
     const [year, month] = currentYearMonth.value.split('-').map(Number);
@@ -91,6 +103,24 @@ const handleDaySelected = (day) => {
     }
 }
 
+const handleMonthSelected = (month) => {
+    const [year] = currentYearMonth.value.split('-');
+    currentYearMonth.value = `${year}-${month}`;
+    viewMode.value = 'days';
+}
+
+const handleViewSelected = (value, type) => {
+    if (type === 'month') {
+        const [year] = currentYearMonth.value.split('-');
+        currentYearMonth.value = `${year}-${value}`;
+        viewMode.value = 'days';
+    } else if (type === 'year') {
+        const [, month] = currentYearMonth.value.split('-');
+        currentYearMonth.value`${value}-${month}`;
+        viewMode.value = 'days';
+    }
+}
+
 const toggleView = (view) => {
     viewMode.value = view;
 }
@@ -116,7 +146,12 @@ const toggleView = (view) => {
             />
         </div>
         <div v-show="viewMode === 'months'">
-            <MonthSelector/>
+            <MonthSelector
+                :current-year-month="currentYearMonth"
+                :current-month="currentDate"
+                :view-selected="handleViewSelected"
+                @month-selected="handleMonthSelected"
+            />
         </div>
     </div>
     <p>{{ selectedDate }}</p>
