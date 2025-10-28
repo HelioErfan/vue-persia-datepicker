@@ -2,7 +2,7 @@ import DatePicker from "./components/DatePicker.vue";
 
 export default {
     install(app) {
-        app.component('DatePicker', DatePicker)
+        app.component('PersianDatePicker', DatePicker)
     }
 }
 

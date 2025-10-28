@@ -7,9 +7,17 @@ import CalendarDays from './CalendarDays.vue';
 import MonthSelector from './MonthSelector.vue'
 import YearSelector from './YearSelector.vue';
 
+const model = defineModel({
+    type: String,
+    default: null
+})
+
 const props = defineProps(
     {
-        defaltDate: String
+        defaltDate: {
+            type: String,
+            default: null
+        }
     }
 )
 
@@ -50,11 +58,11 @@ const initializeDate = (defaultDate) => {
     }
 }
 
-initializeDate(props.defaltDate);
+initializeDate(props.defaltDate || model.value);
 
-watch(() => props.defaltDate, (newDate) => {
+watch(() => model.value, (newDate) => {
     initializeDate(newDate)
-})
+}, { immediate: true })
 
 const updateCalendar = (direction) => {
     const [year, month] = currentYearMonth.value.split('-').map(Number);
@@ -100,7 +108,9 @@ const calendarDays = computed( () => {
 const handleDaySelected = (day) => {
     if(day) {
         const [year, month] = currentYearMonth.value.split('-');
-        selectedDate.value = `${year}/${month.padStart(2,'0')}/${day.split('-')[2].padStart(2,'0')}`;
+        const formatted = `${year}/${month.padStart(2,'0')}/${day.split('-')[2].padStart(2,'0')}`;
+        selectedDate.value = formatted
+        model.value = formatted
     }
 }
 
