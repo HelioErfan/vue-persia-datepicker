@@ -8,7 +8,15 @@ const props = defineProps({
         date: String
     },
     selectedDate: String,
-    currentDay: String
+    currentDay: String,
+    mode: {
+        type: String,
+        default: 'single',
+    },
+    range: {
+        type: Object,
+        default: () => ({ start: null, end: null })
+    }
 })
 
 const emit = defineEmits(['selected-day'])
@@ -16,11 +24,25 @@ const emit = defineEmits(['selected-day'])
 const weekdays = ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج']
 
 const selectedDay = ref('');
+const localRange = ref({start: null, end: null})
 
 const selectDay = (day) => {
-    if(day.day) {
-        selectedDay.value = day.date
-        emit('selected-day', day.date)
+    if (!day.day) return;
+
+    if (props.mode === 'single') {
+        selectedDay.value = day.date;
+        emit('selected-day', day.date);
+    } else {
+        if (!localRange.value.start || (localRange.value.start && localRange.value.end)) {
+            localRange.value = { start: day.date, end: null };
+        } else if (!localRange.value.end) {
+            if (day.date < localRange.value.start) {
+                localRange.value = { start: day.date, end: localRange.value.start };
+            } else {
+                localRange.value.end = day.date;
+            }
+        }
+        emit('selected-range', localRange.value.start && localRange.value.end ? localRange.value.end : day.date)
     }
 }
 

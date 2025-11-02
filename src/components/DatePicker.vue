@@ -7,19 +7,21 @@ import CalendarDays from './CalendarDays.vue';
 import MonthSelector from './MonthSelector.vue'
 import YearSelector from './YearSelector.vue';
 
-const model = defineModel({
-    type: String,
-    default: null
-})
+const dateModel = defineModel('date',{ type: String, default: null })
+const rangeModel = defineModel('range', { type: Object, default: { start: null, end: null } })
 
-const props = defineProps(
-    {
-        defaltDate: {
-            type: String,
-            default: null
-        }
+const props = defineProps({
+    defaultDate: String,
+    mode: {
+        type: String,
+        default: 'single',
+        validator: (value) => ['single', 'range'].includes(value)
+    },
+    defaultRange: {
+        type: Object,
+        default: () => ({ start: null, end: null })
     }
-)
+})
 
 const config = {
     timezone: 'Asia/Tehran',
@@ -46,7 +48,9 @@ const calendar = computed(() => jalali.calendar(currentYearMonth.value))
 
 const dateHeaderTitle = computed(() => calendar.value.title.split(' '))
 
-const selectedDate = ref('');
+const selectedDate = ref(props.defaultDate || dateModel.value);
+
+const range = ref({...props.defaultRange})
 
 const initializeDate = (defaultDate) => {
     if(defaultDate) {
@@ -58,9 +62,9 @@ const initializeDate = (defaultDate) => {
     }
 }
 
-initializeDate(props.defaltDate || model.value);
+initializeDate(props.defaultDate || dateModel.value);
 
-watch(() => model.value, (newDate) => {
+watch(() => dateModel.value, (newDate) => {
     initializeDate(newDate)
 }, { immediate: true })
 
@@ -105,14 +109,41 @@ const calendarDays = computed( () => {
     return days;
 });
 
-const handleDaySelected = (day) => {
-    if(day) {
-        const [year, month] = currentYearMonth.value.split('-');
-        const formatted = `${year}/${month.padStart(2,'0')}/${day.split('-')[2].padStart(2,'0')}`;
-        selectedDate.value = formatted
-        model.value = formatted
+const onSelectDay = (day) => {
+
+    if (!day) return
+
+    const [year, month] = currentYearMonth.value.split('-');
+    // const dayPart = day.split('-')[2] || day
+    const formatted = `${year}/${month.padStart(2, '0')}/${day.split('-')[2].padStart(2, '0')}`;
+
+    if (props.mode === 'single') {
+        selectedDate.value = formatted;
+        dateModel.value = formatted;
+    } else {
+        if (!range.value.start || (range.value.start && range.value.end)) {
+            range.value = { start: formatted, end: null };
+        } else if (!range.value.end) {
+            if (formatted < range.value.start) {
+                range.value = { start: formatted, end: range.value.start };
+            } else {
+                range.value.end = formatted;
+            }
+        }
+        rangeModel.value = range.value
     }
 }
+
+watch(
+    () => props.mode,
+    (mode) => {
+        if(mode === 'single') {
+            range.value = { start: null, end: null }
+        } else {
+            selectedDate.value = null
+        }
+    }
+)
 
 const handleMonthSelected = (month) => {
     const [year] = currentYearMonth.value.split('-');
@@ -159,7 +190,8 @@ const toggleView = (view) => {
                 :calendar-days="calendarDays"
                 :selected-date:="selectedDate"
                 :current-day="currentDate"
-                @selected-day="handleDaySelected"
+                @selected-day="onSelectDay"
+                @selected-range="onSelectDay"
             />
         </div>
         <div v-show="viewMode === 'months'">
