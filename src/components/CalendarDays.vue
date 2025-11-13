@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, inject } from 'vue';
 
 
 const props = defineProps({
@@ -9,17 +9,15 @@ const props = defineProps({
     },
     selectedDate: String,
     currentDay: String,
-    mode: {
-        type: String,
-        default: 'single',
-    },
     range: {
         type: Object,
         default: () => ({ start: null, end: null })
     }
 })
 
-const emit = defineEmits(['selected-day'])
+const emit = defineEmits(['selected-day', 'selected-range'])
+
+const mode = inject('mode', ref('single'))
 
 const weekdays = ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج']
 
@@ -29,7 +27,7 @@ const localRange = ref({start: null, end: null})
 const selectDay = (day) => {
     if (!day.day) return;
 
-    if (props.mode === 'single') {
+    if (mode.value === 'single') {
         selectedDay.value = day.date;
         emit('selected-day', day.date);
     } else {
@@ -50,7 +48,7 @@ watch(
     () => props.selectedDate,
     (newDate) => {
         if(newDate) {
-            selectDay.value = newDate.replace(/\//g, '-');
+            selectedDay.value = newDate.replace(/\//g, '-');
         } else {
             selectedDay.value = null;
         }

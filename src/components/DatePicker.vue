@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, provide } from 'vue'
 import { JalaliDateTime } from '@webilix/jalali-date-time';
 import moment from 'moment-jalaali';
 import CalendarHeader from './CalendarHeader.vue'
@@ -47,6 +47,9 @@ const currentYearMonth = ref(yearMonth)
 const calendar = computed(() => jalali.calendar(currentYearMonth.value))
 
 const dateHeaderTitle = computed(() => calendar.value.title.split(' '))
+
+const mode = ref(props.mode)
+provide('mode', mode)
 
 const selectedDate = ref(props.defaultDate || dateModel.value);
 

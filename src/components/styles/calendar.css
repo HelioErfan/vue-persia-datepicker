@@ -10,6 +10,7 @@
     --calendar-select-text-color: #ffffff;
     --calendar-current: #335CFF;
     --calendar-month_Year_item-bg-color: #F5F7FA;
+    --calendar-in-range-bg-color: #EBF1FF;
 }
 
 .fade-enter-active, .fade-leave-active {
@@ -187,4 +188,12 @@
 }
 .vue-persia-datepicker__calendar_year_grid .vue-persia-datepicker__calendar_year_item:hover {
     border-color: var(--calendar-border-color);
+}
+.vue-persia-datepicker__calendar_day.vue-persia-datepicker__calendar_is_in_range {
+    background-color: var(--calendar-in-range-bg-color) !important;
+    color: red !important;
+}
+.vue-persia-datepicker__calendar_day.vue-persia-datepicker__calendar_is_range_start,
+.vue-persia-datepicker__calendar_day.vue-persia-datepicker__calendar_is_range_end {
+    background-color: aqua !important;
 }
