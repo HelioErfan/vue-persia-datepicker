@@ -64,6 +64,26 @@ const calendarKey = computed(() => {
     const firstRealDay = props.calendarDays.find(day => !!day.day);
     return firstRealDay ? firstRealDay.date.substring(0,7) : Math.random().toString();
 })
+
+const getDayClass = (day) => {
+    if (!day.day) return 'empty'
+
+    if (mode.value === 'single') {
+        return selectedDay.value === day.date ? 'vue-persia-datepicker__calendar_day_selected' : ''
+    } else {
+        const startDay = localRange.value.start
+        const endDay = localRange.value.end
+
+        if (startDay && endDay) {
+            if (day.date === startDay) return 'vue-persia-datepicker__calendar_is_range_start'
+            if (day.date === endDay) return 'vue-persia-datepicker__calendar_is_range_end'
+            if (day.date > startDay && day.date < endDay) return 'vue-persia-datepicker__calendar_is_in_range'
+        } else if (startDay && day.date === startDay) {
+            return 'vue-persia-datepicker__calendar_is_in_range'
+        }
+        return ''
+    }
+}
 </script>
 <template>
     <div class="vue-persia-datepicker__calendar_days">
@@ -75,7 +95,7 @@ const calendarKey = computed(() => {
                 <div 
                     v-for="(day, index) in calendarDays"
                     class="vue-persia-datepicker__calendar_day"
-                    :class="{ empty: !day.day, 'vue-persia-datepicker__calendar_day_selected': selectedDay === day.date,  'vue-persia-datepicker__calendar_current_day': isCurrentDay(day.date) }" 
+                    :class="[getDayClass(day), { 'vue-persia-datepicker__calendar_current_day' : isCurrentDay(day.date) }]" 
                     :key="`${day.date || 'empty'}-${index}`"
                     @click="selectDay(day)"
                     >

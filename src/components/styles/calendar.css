@@ -111,6 +111,7 @@
     border: 1px solid transparent;
     border-radius: 4px;
     position: relative;
+    z-index: 2;
 }
 .vue-persia-datepicker__calendar_days .vue-persia-datepicker__calendar_days_weekdays .vue-persia-datepicker__calendar_day:not(.empty):hover {
     cursor: pointer;
@@ -136,7 +137,7 @@
     left: 50%;
     transform: translateX(-50%);
 }
-:is(.vue-persia-datepicker__calendar_day_selected, .vue-persia-datepicker__calendar_month_selected, .vue-persia-datepicker__calendar_year_selected) .vue-persia-datepicker__calendar_current_dot {
+:is(.vue-persia-datepicker__calendar_day_selected, .vue-persia-datepicker__calendar_month_selected, .vue-persia-datepicker__calendar_year_selected, .vue-persia-datepicker__calendar_is_range_start, .vue-persia-datepicker__calendar_is_range_end) .vue-persia-datepicker__calendar_current_dot {
     background-color: var(--calendar-select-text-color);
 }
 
@@ -191,9 +192,18 @@
 }
 .vue-persia-datepicker__calendar_day.vue-persia-datepicker__calendar_is_in_range {
     background-color: var(--calendar-in-range-bg-color) !important;
-    color: red !important;
+}
+.vue-persia-datepicker__calendar_day.vue-persia-datepicker__calendar_is_in_range:hover {
+    background-color: var(--calendar-in-range-bg-color) !important;
 }
 .vue-persia-datepicker__calendar_day.vue-persia-datepicker__calendar_is_range_start,
 .vue-persia-datepicker__calendar_day.vue-persia-datepicker__calendar_is_range_end {
-    background-color: aqua !important;
+    background-color: var(--calendar-select-bg-color) !important;
+    color: var(--calendar-select-text-color);
+}
+.vue-persia-datepicker__calendar_day.vue-persia-datepicker__calendar_is_range_start {
+    border-radius: 0 4px 4px 0 !important;
+}
+.vue-persia-datepicker__calendar_day.vue-persia-datepicker__calendar_is_range_end {
+    border-radius: 4px 0 0 4px !important;
 }
