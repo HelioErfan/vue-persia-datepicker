@@ -1,6 +1,6 @@
 {
-  "name": "@HelioErfan/vue-persia-datepicker",
-  "version": "1.0.0",
+  "name": "@helioerfan/vue-persia-datepicker",
+  "version": "1.0.1",
   "description": "A Persian datepicker for Vue 3",
   "type": "module",
   "main": "dist/vue-persian-datepicker.umd.js",
@@ -25,5 +25,8 @@
   },
   "author": "HelioErfan",
   "keywords": ["vue3", "jalaaliDatePicker", "persian"],
-  "licence": "MIT"
+  "licence": "MIT",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  }
 }
