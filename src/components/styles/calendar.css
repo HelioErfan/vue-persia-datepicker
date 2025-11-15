@@ -193,7 +193,7 @@
 .vue-persia-datepicker__calendar_day.vue-persia-datepicker__calendar_is_in_range {
     background-color: var(--calendar-in-range-bg-color) !important;
 }
-.vue-persia-datepicker__calendar_day.vue-persia-datepicker__calendar_is_in_range:hover {
+.vue-persia-datepicker__calendar_day.vue-persia-datepicker__calendar_is_range_start ~ .vue-persia-datepicker__calendar_day:hover {
     background-color: var(--calendar-in-range-bg-color) !important;
 }
 .vue-persia-datepicker__calendar_day.vue-persia-datepicker__calendar_is_range_start,

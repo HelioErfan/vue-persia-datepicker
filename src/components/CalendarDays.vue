@@ -74,6 +74,10 @@ const getDayClass = (day) => {
         const startDay = localRange.value.start
         const endDay = localRange.value.end
 
+        if (startDay && !endDay) {
+            return day.date === startDay ? 'vue-persia-datepicker__calendar_is_range_start' : ''
+        }
+
         if (startDay && endDay) {
             if (day.date === startDay) return 'vue-persia-datepicker__calendar_is_range_start'
             if (day.date === endDay) return 'vue-persia-datepicker__calendar_is_range_end'
