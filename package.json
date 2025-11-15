@@ -1,8 +1,11 @@
 {
-  "name": "vue-persia-datepicker",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@HelioErfan/vue-persia-datepicker",
+  "version": "1.0.0",
+  "description": "A Persian datepicker for Vue 3",
   "type": "module",
+  "main": "dist/vue-persian-datepicker.umd.js",
+  "module": "dist/vue-persian-datepicker.es.js",
+  "files": ["dist"],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -16,5 +19,11 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.1",
     "vite": "^7.1.7"
-  }
+  },
+  "peerDependencies": {
+    "vue": "^3.0.0"
+  },
+  "author": "HelioErfan",
+  "keywords": ["vue3", "jalaaliDatePicker", "persian"],
+  "licence": "MIT"
 }
