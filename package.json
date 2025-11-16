@@ -1,6 +1,6 @@
 {
   "name": "@helioerfan/vue-persia-datepicker",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A Persian datepicker for Vue 3",
   "type": "module",
   "main": "dist/index.cjs.js",
