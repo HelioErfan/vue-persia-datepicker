@@ -27,6 +27,6 @@
   "keywords": ["vue3", "jalaaliDatePicker", "persian"],
   "licence": "MIT",
   "publishConfig": {
-    "@HelioErfan:registry": "https://npm.pkg.github.com"
+    "@helioerfan:registry": "https://npm.pkg.github.com"
   }
 }
