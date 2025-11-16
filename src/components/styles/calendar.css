@@ -45,13 +45,11 @@
 
 .vue-persia-datepicker__header :is(.vue-persia-datepicker__header_calendar_days, .vue-persia-datepicker__header_calendar_months) {
     display: flex;
-    flex-direction: row-reverse;
     justify-content: space-between;
     align-items: center;
 }
 .vue-persia-datepicker__header .vue-persia-datepicker__header__month_year {
     display: flex;
-    flex-direction: row-reverse;
     gap: 4px;
     padding: 4px 24px;
     border: 1px solid var(--calendar-border-color);
