@@ -9,14 +9,16 @@ export default defineConfig({
     lib: {
       entry: path.resolve(__dirname, 'src/index.js'),
       name: 'VuePersiaDatepicker',
-      fileName: (format) => `vue-persia-datepicker.${format}.js`
+      formats:['es', 'cjs'],
+      fileName: (format) => `index.${format === 'es' ? 'esm' : format}.js`
     },
     rollupOptions: {
       external: ['vue'],
       output: {
         globals: {
           vue: 'vue'
-        }
+        },
+        exports: 'named'
       },
     }
   },

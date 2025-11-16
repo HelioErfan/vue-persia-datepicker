@@ -1,9 +1,10 @@
+import './components/styles/calendar.css'
 import DatePicker from "./components/DatePicker.vue";
 
-export default {
+const VuePersiaDatePicker = {
     install(app) {
         app.component('VuePersiaDatePicker', DatePicker)
     }
 }
-
-export { DatePicker }
+export default VuePersiaDatePicker
+export { DatePicker } 
