@@ -1,135 +1,259 @@
 # Vue Persia Datepicker
 
-A Vue.js 3 component for displaying and selecting dates in the Jalali (Persian) calendar.
+A modern, customizable, and lightweight **Vue.js 3 Persian (Jalali)
+Datepicker** with support for **single date** and **range date
+selection**.
 
-## Key Features & Benefits
+✔ Fully compatible with Vue 3\
+✔ Supports both Single & Range mode\
+✔ Accurate Jalali date engine\
+✔ Beautiful UI + Fully customizable\
+✔ Easy to install and use
 
-*   **Jalali Calendar Support:**  Displays dates according to the Jalali calendar.
-*   **Vue.js 3 Component:** Seamless integration with Vue.js 3 projects.
-*   **Easy to Use:** Simple and intuitive API for developers.
-*   **Customizable:** Offers various configuration options to tailor the component to specific needs.
-*   **Lightweight:** Minimal dependencies and a small bundle size.
+------------------------------------------------------------------------
 
-## Prerequisites & Dependencies
+## 📦 Installation
 
-Before using Vue Persia Datepicker, ensure that you have the following installed:
+Install via npm:
 
-*   **Node.js:**  Version 18 or higher is recommended.
-*   **npm or Yarn:** Package manager.
-*   **Vue.js:** Version 3.x
+``` bash
+npm install @helioerfan/vue-persia-datepicker
+```
 
-The project also relies on the following dependencies, which are automatically installed via npm/yarn:
+Or via yarn:
 
-*   `@webilix/jalali-date-time`:  A library for Jalali date and time manipulation.
-*   `moment-jalaali`: Library for jalali date time formatting and conversion.
-*   `vue`: Vue.js framework.
+``` bash
+yarn add @helioerfan/vue-persia-datepicker
+```
 
-## Installation & Setup Instructions
+------------------------------------------------------------------------
 
-1.  **Clone the repository:**
+## 🚀 Getting Started
 
-    ```bash
-    git clone https://github.com/HelioErfan/vue-persia-datepicker.git
-    cd vue-persia-datepicker
-    ```
+### **1. Global Installation (Recommended)**
 
-2.  **Install dependencies:**
+``` js
+// main.js
+import { createApp } from 'vue';
+import App from './App.vue';
 
-    ```bash
-    npm install  # or yarn install
-    ```
+import VuePersiaDatepicker from '@helioerfan/vue-persia-datepicker';
+import '@helioerfan/vue-persia-datepicker/dist/style.css';
 
-3.  **Build the project:**
-    ```bash
-    npm run build # or yarn build
-    ```
+const app = createApp(App);
+app.use(VuePersiaDatepicker);
+app.mount('#app');
+```
 
-4.  **Import and use the component in your Vue.js project:**
+------------------------------------------------------------------------
 
-    ```javascript
-    import DatePicker from './src/components/DatePicker.vue';
+### **2. Local Component Import**
 
-    export default {
-      components: {
-        DatePicker
-      },
-      // ...
-    }
-    ```
+``` vue
+<script setup>
+import { DatePicker } from '@helioerfan/vue-persia-datepicker';
+import '@helioerfan/vue-persia-datepicker/dist/style.css';
+</script>
 
-## Usage Examples & API Documentation
+<template>
+  <DatePicker />
+</template>
+```
 
-**Basic Usage:**
+------------------------------------------------------------------------
 
-```vue
+# 🌀 v-model Modes (Single & Range)
+
+This datepicker supports **two different modes**, each with its own
+`v-model`.
+
+------------------------------------------------------------------------
+
+# 🟦 **1. Single Date Mode**
+
+Use:
+
+-   `mode="single"`
+-   `v-model:date`
+
+### Example
+
+``` vue
 <template>
   <div>
-    <DatePicker v-model="selectedDate" />
+    <DatePicker v-model:date="selectedDate" mode="single" />
     <p>Selected Date: {{ selectedDate }}</p>
   </div>
 </template>
 
-<script>
-import DatePicker from './src/components/DatePicker.vue';
+<script setup>
 import { ref } from 'vue';
 
-export default {
-  components: {
-    DatePicker
-  },
-  setup() {
-    const selectedDate = ref(null);
-
-    return {
-      selectedDate
-    };
-  }
-}
+const selectedDate = ref(null);
 </script>
 ```
 
-**Component Props:**
+### Returns
 
-| Prop Name       | Type   | Default Value | Description                                                              |
-| --------------- | ------ | ------------- | ------------------------------------------------------------------------ |
-| `v-model`       | Date   | `null`        | The selected date (as a JavaScript Date object).                          |
-| `format`        | String | `YYYY-MM-DD`  | Date Format using `moment-jalaali` library.                                           |
-| `initialDate` | Date  |  Today's Date |  Set the initial displayed date in the calendar when it first loads.                                          |
-| `disabledDates` | Array | `[]`          | An array of dates to disable.                                          |
+A single JavaScript `Date` object:
 
-## Configuration Options
+``` js
+1404/08/25
+```
 
-The following configuration options are available:
+------------------------------------------------------------------------
 
-*   **CSS Styling:** Customize the appearance of the datepicker by modifying the CSS variables in `src/components/styles/calendar.css`. You can override these variables in your own CSS files.
+# 🟩 **2. Range Mode**
 
-    ```css
-    :root {
-        --calendar-bg-color: #ffffff;
-        --calendar-border-color: #E1E4EA;
-        --calendar-border-radius: 12px;
-        --calendar-header-padding: 12px;
-        --calendar-header-bg-color: #F5F7FA;
-        --ripple-color: rgba(4, 16, 26, 0.3);
-        --calendar-select-bg-color: #335CFF;
-        --calendar-select-text-color: #ffffff;
-        --calendar-current: #335CFF;
-        --calendar-month_Year_item-bg-color: #F5F7FA;
-    }
-    ```
+Use:
 
-## Contributing Guidelines
+-   `mode="range"`
+-   `v-model:range`
 
-Contributions are welcome!  Here's how you can contribute:
+### Example
 
-1.  Fork the repository.
-2.  Create a new branch for your feature or bug fix.
-3.  Implement your changes.
-4.  Write tests to ensure your changes are working correctly.
-5.  Submit a pull request with a clear description of your changes.
+``` vue
+<template>
+  <div>
+    <DatePicker v-model:range="selectedRange" mode="range" />
+    <p>Range: {{ selectedRange }}</p>
+  </div>
+</template>
 
-## Acknowledgments
+<script setup>
+import { ref } from 'vue';
 
-*   This project utilizes the `@webilix/jalali-date-time` library for Jalali date calculations.
-*   Uses `moment-jalaali` for date formatting.
-*   Built using Vue.js and Vite.
+const selectedRange = ref({
+  start: null,
+  end: null
+});
+</script>
+```
+
+### Returns
+
+An object:
+
+``` js
+{
+  start: Date | null,
+  end: Date | null
+}
+```
+
+------------------------------------------------------------------------
+
+# 🧩 Summary
+
+  Mode       v-model           Returned Value   Description
+  ---------- ----------------- ---------------- -------------------
+  `single`   `v-model:date`    `Date`           Select one date
+  `range`    `v-model:range`   `{start, end}`   Select date range
+
+------------------------------------------------------------------------
+
+# 🎨 Props
+
+  -----------------------------------------------------------------------------------
+  Prop Name            Type            Default                   Description
+  -------------------- --------------- ------------------------- --------------------
+  `mode`               String          `"single"`                Select mode:
+                                                                 `"single"` or
+                                                                 `"range"`
+
+  `v-model:date`       Date            `null`                    Selected date in
+                                                                 single mode
+
+  `v-model:range`      Object          `{start:null,end:null}`   Selected dates in
+                                                                 range mode
+
+  `format`             String          `YYYY/MM/DD`              Output format
+                                                                 (`moment-jalaali`)
+
+  `initialDate`        Date            Today                     Calendar initial
+                                                                 display
+
+  `disabledDates`      Array           `[]`                      Disable some dates
+
+  `minDate`            Date            `null`                    Minimum selectable
+                                                                 date
+
+  `maxDate`            Date            `null`                    Maximum selectable
+                                                                 date
+
+  `placeholder`        String          `"Select date"`           Input placeholder
+
+  `readonly`           Boolean         `false`                   Prevent typing in
+                                                                 input
+
+  `clearable`          Boolean         `true`                    Show clear button
+  -----------------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+# 🔔 Events
+
+  Event Name       Description
+  ---------------- ----------------------
+  `update:date`    Fires in single mode
+  `update:range`   Fires in range mode
+  `opened`         Dropdown opened
+  `closed`         Dropdown closed
+  `cleared`        Value cleared
+
+------------------------------------------------------------------------
+
+## 🖌️ Custom Styling (CSS Variables)
+
+``` css
+:root {
+  --calendar-bg-color: #ffffff;
+  --calendar-border-color: #E1E4EA;
+  --calendar-border-radius: 12px;
+  --calendar-header-padding: 12px;
+  --calendar-header-bg-color: #F5F7FA;
+  --ripple-color: rgba(4, 16, 26, 0.3);
+  --calendar-select-bg-color: #335CFF;
+  --calendar-select-text-color: #ffffff;
+  --calendar-current: #335CFF;
+  --calendar-month-year-item-bg-color: #F5F7FA;
+}
+```
+
+------------------------------------------------------------------------
+
+
+# 🔧 Dependencies
+
+-   **@webilix/jalali-date-time**
+-   **moment-jalaali**
+-   **vue 3**
+
+------------------------------------------------------------------------
+
+# 🤝 Contributing
+
+1.  Fork the project\
+2.  Create a new branch\
+3.  Commit your changes\
+4.  Submit a pull request
+
+------------------------------------------------------------------------
+
+# ❤️ Acknowledgments
+
+-   Jalali utilities by **@webilix/jalali-date-time**
+-   Formatting via **moment-jalaali**
+-   Built with Vue + Vite
+
+------------------------------------------------------------------------
+
+# 📄 License
+
+MIT License
+
+------------------------------------------------------------------------
+
+# ⭐ Support
+
+Give a ⭐ on GitHub if you like this project!
