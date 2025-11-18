@@ -38,7 +38,7 @@ import { createApp } from 'vue';
 import App from './App.vue';
 
 import VuePersiaDatepicker from '@helioerfan/vue-persia-datepicker';
-import '@helioerfan/vue-persia-datepicker/dist/style.css';
+import '@helioerfan/vue-persia-datepicker/dist/vue-persia-datepicker.css'
 
 const app = createApp(App);
 app.use(VuePersiaDatepicker);
@@ -52,7 +52,7 @@ app.mount('#app');
 ``` vue
 <script setup>
 import { DatePicker } from '@helioerfan/vue-persia-datepicker';
-import '@helioerfan/vue-persia-datepicker/dist/style.css';
+import '@helioerfan/vue-persia-datepicker/dist/vue-persia-datepicker.css'
 </script>
 
 <template>
