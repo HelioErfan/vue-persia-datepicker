@@ -166,27 +166,6 @@ An object:
 
   `v-model:range`      Object          `{start:null,end:null}`   Selected dates in
                                                                  range mode
-
-  `format`             String          `YYYY/MM/DD`              Output format
-                                                                 (`moment-jalaali`)
-
-  `initialDate`        Date            Today                     Calendar initial
-                                                                 display
-
-  `disabledDates`      Array           `[]`                      Disable some dates
-
-  `minDate`            Date            `null`                    Minimum selectable
-                                                                 date
-
-  `maxDate`            Date            `null`                    Maximum selectable
-                                                                 date
-
-  `placeholder`        String          `"Select date"`           Input placeholder
-
-  `readonly`           Boolean         `false`                   Prevent typing in
-                                                                 input
-
-  `clearable`          Boolean         `true`                    Show clear button
   -----------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------
