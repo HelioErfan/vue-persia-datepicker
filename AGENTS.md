@@ -2,6 +2,10 @@
 
 This repository is a Vue 3 Jalali datepicker library built with Vite. Keep changes focused on the library and its documented consumer API.
 
+## Delegation
+
+- Use subagents for tasks, assigning concrete subtasks where useful. Retain ownership of the overall task and review the combined result before reporting completion.
+
 ## Where to work
 
 - `src/components/DatePicker.vue` owns calendar state, date selection, and the `date` and `range` models.
