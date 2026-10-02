@@ -130,7 +130,7 @@ const onSelectDay = (day) => {
             if (formatted < range.value.start) {
                 range.value = { start: formatted, end: range.value.start };
             } else {
-                range.value.end = formatted;
+                range.value = { start: range.value.start, end: formatted };
             }
         }
         rangeModel.value = range.value

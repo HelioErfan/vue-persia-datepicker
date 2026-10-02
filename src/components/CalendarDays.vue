@@ -40,7 +40,7 @@ const selectDay = (day) => {
                 localRange.value.end = day.date;
             }
         }
-        emit('selected-range', localRange.value.start && localRange.value.end ? localRange.value.end : day.date)
+        emit('selected-range', day.date)
     }
 }
 
