@@ -25,7 +25,17 @@
     "vue": "^3.0.0"
   },
   "author": "HelioErfan",
-  "keywords": ["vue3", "jalaaliDatePicker", "persian"],
+  "keywords": [
+    "vue",
+    "vue3",
+    "datepicker",
+    "date-picker",
+    "jalali",
+    "jalaali",
+    "persian",
+    "persian-calendar",
+    "date-range-picker"
+  ],
   "licence": "MIT",
   "publishConfig": {
     "access": "public"
