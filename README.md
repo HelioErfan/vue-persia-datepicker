@@ -95,10 +95,10 @@ const selectedDate = ref(null);
 
 ### Returns
 
-A single JavaScript `Date` object:
+A Jalali date string in `YYYY/MM/DD` format:
 
 ``` js
-1404/08/25
+'1404/08/25'
 ```
 
 ------------------------------------------------------------------------
@@ -132,14 +132,16 @@ const selectedRange = ref({
 
 ### Returns
 
-An object:
+An object containing Jalali date strings in `YYYY/MM/DD` format:
 
 ``` js
 {
-  start: Date | null,
-  end: Date | null
+  start: '1404/08/25',
+  end: '1404/08/28'
 }
 ```
+
+Either value can be `null` until it is selected.
 
 ------------------------------------------------------------------------
 
@@ -147,8 +149,8 @@ An object:
 
   Mode       v-model           Returned Value   Description
   ---------- ----------------- ---------------- -------------------
-  `single`   `v-model:date`    `Date`           Select one date
-  `range`    `v-model:range`   `{start, end}`   Select date range
+  `single`   `v-model:date`    `YYYY/MM/DD` string        Select one date
+  `range`    `v-model:range`   `{start, end}`             Select date range
 
 ------------------------------------------------------------------------
 
@@ -161,12 +163,29 @@ An object:
                                                                  `"single"` or
                                                                  `"range"`
 
-  `v-model:date`       Date            `null`                    Selected date in
+  `v-model:date`       String          `null`                    Selected date in
                                                                  single mode
 
   `v-model:range`      Object          `{start:null,end:null}`   Selected dates in
                                                                  range mode
+
+  `disable`            String or Array `[]`                      English weekday names
+                                                                 to disable
   -----------------------------------------------------------------------------------
+
+Use `disable="Friday"` to make every Friday unavailable, or pass another
+weekday name such as `disable="Wednesday"`. To disable more than one weekday,
+pass an array:
+
+```vue
+<DatePicker v-model:date="selectedDate" disable="Friday" />
+<DatePicker v-model:range="selectedRange" mode="range" :disable="['Friday', 'Wednesday']" />
+```
+
+Accepted names are `Saturday`, `Sunday`, `Monday`, `Tuesday`, `Wednesday`,
+`Thursday`, and `Friday` (case-insensitive). Disabled dates remain visible
+but cannot be selected as a single date or range endpoint. A range can span
+disabled weekdays.
 
 ------------------------------------------------------------------------
 
@@ -195,6 +214,7 @@ An object:
   --calendar-select-bg-color: #335CFF;
   --calendar-select-text-color: #ffffff;
   --calendar-current: #335CFF;
+  --calendar-disabled-text-color: #8e939d;
   --calendar-month-year-item-bg-color: #F5F7FA;
 }
 ```

@@ -22,25 +22,19 @@ const mode = inject('mode', ref('single'))
 const weekdays = ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج']
 
 const selectedDay = ref('');
-const localRange = ref({start: null, end: null})
+const normalizedRange = computed(() => ({
+    start: props.range?.start?.replace(/\//g, '-') ?? null,
+    end: props.range?.end?.replace(/\//g, '-') ?? null
+}))
 
 const selectDay = (day) => {
-    if (!day.day) return;
+    if (!day.day || day.disabled) return;
 
     if (mode.value === 'single') {
         selectedDay.value = day.date;
         emit('selected-day', day.date);
     } else {
-        if (!localRange.value.start || (localRange.value.start && localRange.value.end)) {
-            localRange.value = { start: day.date, end: null };
-        } else if (!localRange.value.end) {
-            if (day.date < localRange.value.start) {
-                localRange.value = { start: day.date, end: localRange.value.start };
-            } else {
-                localRange.value.end = day.date;
-            }
-        }
-        emit('selected-range', localRange.value.start && localRange.value.end ? localRange.value.end : day.date)
+        emit('selected-range', day.date)
     }
 }
 
@@ -71,8 +65,8 @@ const getDayClass = (day) => {
     if (mode.value === 'single') {
         return selectedDay.value === day.date ? 'vue-persia-datepicker__calendar_day_selected' : ''
     } else {
-        const startDay = localRange.value.start
-        const endDay = localRange.value.end
+        const startDay = normalizedRange.value.start
+        const endDay = normalizedRange.value.end
 
         if (startDay && !endDay) {
             return day.date === startDay ? 'vue-persia-datepicker__calendar_is_range_start' : ''
@@ -99,7 +93,8 @@ const getDayClass = (day) => {
                 <div 
                     v-for="(day, index) in calendarDays"
                     class="vue-persia-datepicker__calendar_day"
-                    :class="[getDayClass(day), { 'vue-persia-datepicker__calendar_current_day' : isCurrentDay(day.date) }]" 
+                    :class="[getDayClass(day), { 'vue-persia-datepicker__calendar_current_day' : isCurrentDay(day.date), 'vue-persia-datepicker__calendar_day_disabled': day.disabled }]"
+                    :aria-disabled="day.day ? !!day.disabled : null"
                     :key="`${day.date || 'empty'}-${index}`"
                     @click="selectDay(day)"
                     >

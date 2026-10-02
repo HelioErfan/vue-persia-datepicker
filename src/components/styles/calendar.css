@@ -111,7 +111,7 @@
     position: relative;
     z-index: 2;
 }
-.vue-persia-datepicker__calendar_days .vue-persia-datepicker__calendar_days_weekdays .vue-persia-datepicker__calendar_day:not(.empty):hover {
+.vue-persia-datepicker__calendar_days .vue-persia-datepicker__calendar_days_weekdays .vue-persia-datepicker__calendar_day:not(.empty):not(.vue-persia-datepicker__calendar_day_disabled):hover {
     cursor: pointer;
     border-color: var(--calendar-border-color);
 }
@@ -191,7 +191,7 @@
 .vue-persia-datepicker__calendar_day.vue-persia-datepicker__calendar_is_in_range {
     background-color: var(--calendar-in-range-bg-color) !important;
 }
-.vue-persia-datepicker__calendar_day.vue-persia-datepicker__calendar_is_range_start ~ .vue-persia-datepicker__calendar_day:hover {
+.vue-persia-datepicker__calendar_day.vue-persia-datepicker__calendar_is_range_start ~ .vue-persia-datepicker__calendar_day:not(.vue-persia-datepicker__calendar_day_disabled):hover {
     background-color: var(--calendar-in-range-bg-color) !important;
 }
 .vue-persia-datepicker__calendar_day.vue-persia-datepicker__calendar_is_range_start,
@@ -204,4 +204,10 @@
 }
 .vue-persia-datepicker__calendar_day.vue-persia-datepicker__calendar_is_range_end {
     border-radius: 4px 0 0 4px !important;
+}
+
+.vue-persia-datepicker__calendar_days .vue-persia-datepicker__calendar_days_weekdays .vue-persia-datepicker__calendar_day_disabled {
+    background-color: var(--calendar-header-bg-color) !important;
+    color: var(--calendar-disabled-text-color, #8e939d) !important;
+    cursor: not-allowed;
 }

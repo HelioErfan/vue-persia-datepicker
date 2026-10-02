@@ -1,14 +1,15 @@
 {
   "name": "@helioerfan/vue-persia-datepicker",
-  "version": "1.0.0",
-  "description": "A Persian datepicker for Vue 3",
+  "version": "1.1.0",
+  "description": "A Vue 3 Persian (Jalali) date picker with single-date and date-range selection",
   "type": "module",
-  "main": "dist/index.cjs.js",
+  "main": "dist/index.cjs",
   "module": "dist/index.esm.js",
   "files": ["dist"],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "test": "npm run build && node --test test/*.test.js",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -24,7 +25,17 @@
     "vue": "^3.0.0"
   },
   "author": "HelioErfan",
-  "keywords": ["vue3", "jalaaliDatePicker", "persian"],
+  "keywords": [
+    "vue",
+    "vue3",
+    "datepicker",
+    "date-picker",
+    "jalali",
+    "jalaali",
+    "persian",
+    "persian-calendar",
+    "date-range-picker"
+  ],
   "licence": "MIT",
   "publishConfig": {
     "access": "public"

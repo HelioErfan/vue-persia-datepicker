@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch, provide } from 'vue'
+import { ref, computed, watch, provide, getCurrentInstance } from 'vue'
 import { JalaliDateTime } from '@webilix/jalali-date-time';
 import moment from 'moment-jalaali';
 import CalendarHeader from './CalendarHeader.vue'
@@ -12,6 +12,10 @@ const rangeModel = defineModel('range', { type: Object, default: { start: null, 
 
 const props = defineProps({
     defaultDate: String,
+    disable: {
+        type: [String, Array],
+        default: () => []
+    },
     mode: {
         type: String,
         default: 'single',
@@ -46,14 +50,23 @@ const currentYearMonth = ref(yearMonth)
 
 const calendar = computed(() => jalali.calendar(currentYearMonth.value))
 
+const weekdayNames = ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday']
+const disabledWeekdays = computed(() => {
+    const names = Array.isArray(props.disable) ? props.disable : [props.disable]
+    return new Set(names.map((name) =>
+        typeof name === 'string' ? weekdayNames.indexOf(name.trim().toLowerCase()) : -1
+    ))
+})
+
 const dateHeaderTitle = computed(() => calendar.value.title.split(' '))
 
-const mode = ref(props.mode)
+const mode = computed(() => props.mode)
 provide('mode', mode)
 
 const selectedDate = ref(props.defaultDate || dateModel.value);
 
-const range = ref({...props.defaultRange})
+const initialRange = getCurrentInstance().vnode.props?.range ?? props.defaultRange
+const range = ref({ ...initialRange })
 
 const initializeDate = (defaultDate) => {
     if(defaultDate) {
@@ -65,11 +78,25 @@ const initializeDate = (defaultDate) => {
     }
 }
 
-initializeDate(props.defaultDate || dateModel.value);
+initializeDate(dateModel.value ?? props.defaultDate);
+if (props.mode === 'range' && range.value.start) {
+    currentYearMonth.value = range.value.start.split('/').slice(0, 2).join('-');
+}
 
 watch(() => dateModel.value, (newDate) => {
     initializeDate(newDate)
-}, { immediate: true })
+})
+
+watch(
+    () => [rangeModel.value?.start, rangeModel.value?.end],
+    ([start, end]) => {
+        const previousStart = range.value.start;
+        range.value = { start: start ?? null, end: end ?? null };
+        if (props.mode === 'range' && start && start !== previousStart) {
+            currentYearMonth.value = start.split('/').slice(0, 2).join('-');
+        }
+    }
+)
 
 const updateCalendar = (direction) => {
     const [year, month] = currentYearMonth.value.split('-').map(Number);
@@ -102,7 +129,11 @@ const calendarDays = computed( () => {
     // Add actual days of the month
     for (let day = 1; day <= daysInMonth; day++) {
         const dateStr = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-        days.push({day, date: dateStr})
+        days.push({
+            day,
+            date: dateStr,
+            disabled: disabledWeekdays.value.has((firstDayOfWeek + day - 1) % 7)
+        })
     }
 
     // Add empty days at the end to complete last week
@@ -114,7 +145,7 @@ const calendarDays = computed( () => {
 
 const onSelectDay = (day) => {
 
-    if (!day) return
+    if (!day || calendarDays.value.some((calendarDay) => calendarDay.date === day && calendarDay.disabled)) return
 
     const [year, month] = currentYearMonth.value.split('-');
     // const dayPart = day.split('-')[2] || day
@@ -130,7 +161,7 @@ const onSelectDay = (day) => {
             if (formatted < range.value.start) {
                 range.value = { start: formatted, end: range.value.start };
             } else {
-                range.value.end = formatted;
+                range.value = { start: range.value.start, end: formatted };
             }
         }
         rangeModel.value = range.value
@@ -191,7 +222,8 @@ const toggleView = (view) => {
         <div v-show="viewMode === 'days'">
             <CalendarDays
                 :calendar-days="calendarDays"
-                :selected-date:="selectedDate"
+                :selected-date="selectedDate"
+                :range="range"
                 :current-day="currentDate"
                 @selected-day="onSelectDay"
                 @selected-range="onSelectDay"
