@@ -25,7 +25,7 @@ const selectedDay = ref('');
 const localRange = ref({start: null, end: null})
 
 const selectDay = (day) => {
-    if (!day.day) return;
+    if (!day.day || day.disabled) return;
 
     if (mode.value === 'single') {
         selectedDay.value = day.date;
@@ -99,7 +99,8 @@ const getDayClass = (day) => {
                 <div 
                     v-for="(day, index) in calendarDays"
                     class="vue-persia-datepicker__calendar_day"
-                    :class="[getDayClass(day), { 'vue-persia-datepicker__calendar_current_day' : isCurrentDay(day.date) }]" 
+                    :class="[getDayClass(day), { 'vue-persia-datepicker__calendar_current_day' : isCurrentDay(day.date), 'vue-persia-datepicker__calendar_day_disabled': day.disabled }]"
+                    :aria-disabled="day.day ? !!day.disabled : null"
                     :key="`${day.date || 'empty'}-${index}`"
                     @click="selectDay(day)"
                     >

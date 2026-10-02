@@ -12,6 +12,10 @@ const rangeModel = defineModel('range', { type: Object, default: { start: null, 
 
 const props = defineProps({
     defaultDate: String,
+    disable: {
+        type: [String, Array],
+        default: () => []
+    },
     mode: {
         type: String,
         default: 'single',
@@ -45,6 +49,14 @@ const yearMonth = today.split(' ')[0].split('/').slice(0, 2).join('-')
 const currentYearMonth = ref(yearMonth)
 
 const calendar = computed(() => jalali.calendar(currentYearMonth.value))
+
+const weekdayNames = ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday']
+const disabledWeekdays = computed(() => {
+    const names = Array.isArray(props.disable) ? props.disable : [props.disable]
+    return new Set(names.map((name) =>
+        typeof name === 'string' ? weekdayNames.indexOf(name.trim().toLowerCase()) : -1
+    ))
+})
 
 const dateHeaderTitle = computed(() => calendar.value.title.split(' '))
 
@@ -102,7 +114,11 @@ const calendarDays = computed( () => {
     // Add actual days of the month
     for (let day = 1; day <= daysInMonth; day++) {
         const dateStr = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-        days.push({day, date: dateStr})
+        days.push({
+            day,
+            date: dateStr,
+            disabled: disabledWeekdays.value.has((firstDayOfWeek + day - 1) % 7)
+        })
     }
 
     // Add empty days at the end to complete last week
@@ -114,7 +130,7 @@ const calendarDays = computed( () => {
 
 const onSelectDay = (day) => {
 
-    if (!day) return
+    if (!day || calendarDays.value.some((calendarDay) => calendarDay.date === day && calendarDay.disabled)) return
 
     const [year, month] = currentYearMonth.value.split('-');
     // const dayPart = day.split('-')[2] || day
