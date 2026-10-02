@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch, provide } from 'vue'
+import { ref, computed, watch, provide, getCurrentInstance } from 'vue'
 import { JalaliDateTime } from '@webilix/jalali-date-time';
 import moment from 'moment-jalaali';
 import CalendarHeader from './CalendarHeader.vue'
@@ -60,12 +60,13 @@ const disabledWeekdays = computed(() => {
 
 const dateHeaderTitle = computed(() => calendar.value.title.split(' '))
 
-const mode = ref(props.mode)
+const mode = computed(() => props.mode)
 provide('mode', mode)
 
 const selectedDate = ref(props.defaultDate || dateModel.value);
 
-const range = ref({...props.defaultRange})
+const initialRange = getCurrentInstance().vnode.props?.range ?? props.defaultRange
+const range = ref({ ...initialRange })
 
 const initializeDate = (defaultDate) => {
     if(defaultDate) {
@@ -77,11 +78,25 @@ const initializeDate = (defaultDate) => {
     }
 }
 
-initializeDate(props.defaultDate || dateModel.value);
+initializeDate(dateModel.value ?? props.defaultDate);
+if (props.mode === 'range' && range.value.start) {
+    currentYearMonth.value = range.value.start.split('/').slice(0, 2).join('-');
+}
 
 watch(() => dateModel.value, (newDate) => {
     initializeDate(newDate)
-}, { immediate: true })
+})
+
+watch(
+    () => [rangeModel.value?.start, rangeModel.value?.end],
+    ([start, end]) => {
+        const previousStart = range.value.start;
+        range.value = { start: start ?? null, end: end ?? null };
+        if (props.mode === 'range' && start && start !== previousStart) {
+            currentYearMonth.value = start.split('/').slice(0, 2).join('-');
+        }
+    }
+)
 
 const updateCalendar = (direction) => {
     const [year, month] = currentYearMonth.value.split('-').map(Number);
@@ -207,7 +222,8 @@ const toggleView = (view) => {
         <div v-show="viewMode === 'days'">
             <CalendarDays
                 :calendar-days="calendarDays"
-                :selected-date:="selectedDate"
+                :selected-date="selectedDate"
+                :range="range"
                 :current-day="currentDate"
                 @selected-day="onSelectDay"
                 @selected-range="onSelectDay"
