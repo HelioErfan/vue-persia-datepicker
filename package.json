@@ -1,6 +1,6 @@
 {
   "name": "@helioerfan/vue-persia-datepicker",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A Vue 3 Persian (Jalali) date picker with single-date and date-range selection",
   "type": "module",
   "main": "dist/index.cjs",
