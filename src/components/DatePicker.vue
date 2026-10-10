@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch, provide, getCurrentInstance } from 'vue'
+import { ref, computed, watch, provide, getCurrentInstance, onMounted, onUnmounted } from 'vue'
 import { JalaliDateTime } from '@webilix/jalali-date-time';
 import moment from 'moment-jalaali';
 import CalendarHeader from './CalendarHeader.vue'
@@ -8,10 +8,14 @@ import MonthSelector from './MonthSelector.vue'
 import YearSelector from './YearSelector.vue';
 
 const dateModel = defineModel('date',{ type: String, default: null })
-const rangeModel = defineModel('range', { type: Object, default: { start: null, end: null } })
+const rangeModel = defineModel('range', { type: Object, default: () => ({ start: null, end: null }) })
 
 const props = defineProps({
     defaultDate: String,
+    showActions: {
+        type: Boolean,
+        default: false
+    },
     disable: {
         type: [String, Array],
         default: () => []
@@ -38,15 +42,18 @@ const config = {
 
 const jalali = JalaliDateTime(config)
 
-const today = jalali.now()
-
 const viewMode = ref('days')
+const readToday = () => jalali.now({ timezone: config.timezone, locale: config.locale, format: config.dateFormat })
+const currentDate = ref(readToday())
+const yearMonthOf = (date) => (date || currentDate.value).split('/').slice(0, 2).join('-')
+const copyRange = (value) => ({ start: value?.start ?? null, end: value?.end ?? null })
 
-const currentDate = today.split(' ')[0]
-
-const yearMonth = today.split(' ')[0].split('/').slice(0, 2).join('-')
-
-const currentYearMonth = ref(yearMonth)
+const committedDate = ref(dateModel.value ?? props.defaultDate ?? null)
+const initialRange = getCurrentInstance().vnode.props?.range ?? props.defaultRange
+const committedRange = ref(copyRange(initialRange))
+const selectedDate = ref(committedDate.value)
+const range = ref(copyRange(committedRange.value))
+const currentYearMonth = ref(yearMonthOf(props.mode === 'range' && range.value.start ? range.value.start : selectedDate.value))
 
 const calendar = computed(() => jalali.calendar(currentYearMonth.value))
 
@@ -63,40 +70,94 @@ const dateHeaderTitle = computed(() => calendar.value.title.split(' '))
 const mode = computed(() => props.mode)
 provide('mode', mode)
 
-const selectedDate = ref(props.defaultDate || dateModel.value);
-
-const initialRange = getCurrentInstance().vnode.props?.range ?? props.defaultRange
-const range = ref({ ...initialRange })
-
-const initializeDate = (defaultDate) => {
-    if(defaultDate) {
-        selectedDate.value = defaultDate;
-        currentYearMonth.value = defaultDate.split('/').slice(0,2).join('-');
-    } else {
-        selectedDate.value = null;
-        currentYearMonth.value = today.split(' ')[0].split('/').slice(0, 2).join('-');
-    }
-}
-
-initializeDate(dateModel.value ?? props.defaultDate);
-if (props.mode === 'range' && range.value.start) {
-    currentYearMonth.value = range.value.start.split('/').slice(0, 2).join('-');
+const restoreSelection = () => {
+    selectedDate.value = committedDate.value
+    range.value = copyRange(committedRange.value)
+    currentDate.value = readToday()
+    currentYearMonth.value = yearMonthOf(props.mode === 'single' ? selectedDate.value : range.value.start)
+    viewMode.value = 'days'
 }
 
 watch(() => dateModel.value, (newDate) => {
-    initializeDate(newDate)
+    committedDate.value = newDate ?? null
+    selectedDate.value = committedDate.value
+    if (!props.showActions || props.mode === 'single') {
+        currentDate.value = readToday()
+        currentYearMonth.value = yearMonthOf(selectedDate.value)
+    }
 })
 
 watch(
     () => [rangeModel.value?.start, rangeModel.value?.end],
     ([start, end]) => {
         const previousStart = range.value.start;
-        range.value = { start: start ?? null, end: end ?? null };
-        if (props.mode === 'range' && start && start !== previousStart) {
-            currentYearMonth.value = start.split('/').slice(0, 2).join('-');
+        committedRange.value = copyRange({ start, end })
+        range.value = copyRange(committedRange.value)
+        if (props.mode === 'range' && (props.showActions || (start && start !== previousStart))) {
+            currentDate.value = readToday()
+            currentYearMonth.value = yearMonthOf(start)
         }
     }
 )
+
+const isDateDisabled = (date) => {
+    if (!date || disabledWeekdays.value.size === 0) return false
+    const weekday = moment(date, 'jYYYY/jMM/jDD').day()
+    return disabledWeekdays.value.has((weekday + 1) % 7)
+}
+
+const canConfirm = computed(() => {
+    if (props.mode === 'single') return !!selectedDate.value && !isDateDisabled(selectedDate.value)
+    const { start, end } = range.value
+    return !!start && !!end && start <= end && !isDateDisabled(start) && !isDateDisabled(end)
+})
+
+const nowDisabled = computed(() => isDateDisabled(currentDate.value))
+
+let todayRefreshTimer
+const scheduleTodayRefresh = () => {
+    clearTimeout(todayRefreshTimer)
+    if (!props.showActions) return
+    const now = new Date()
+    const midnight = jalali.periodDay(1, now, config.timezone).to.getTime() + 1
+    todayRefreshTimer = setTimeout(() => {
+        currentDate.value = readToday()
+        scheduleTodayRefresh()
+    }, midnight - now.getTime())
+}
+
+onMounted(scheduleTodayRefresh)
+onUnmounted(() => clearTimeout(todayRefreshTimer))
+
+const commitSelection = () => {
+    if (props.mode === 'single') {
+        committedDate.value = selectedDate.value
+        dateModel.value = selectedDate.value
+    } else {
+        committedRange.value = copyRange(range.value)
+        rangeModel.value = copyRange(range.value)
+    }
+}
+
+const confirmSelection = () => {
+    if (!props.showActions || !canConfirm.value) return
+    commitSelection()
+}
+
+const cancelSelection = () => {
+    if (!props.showActions) return
+    restoreSelection()
+}
+
+const selectNow = () => {
+    if (!props.showActions) return
+    currentDate.value = readToday()
+    if (isDateDisabled(currentDate.value)) return
+    if (props.mode === 'single') selectedDate.value = currentDate.value
+    else range.value = { start: currentDate.value, end: null }
+    currentYearMonth.value = yearMonthOf(currentDate.value)
+    viewMode.value = 'days'
+}
 
 const updateCalendar = (direction) => {
     const [year, month] = currentYearMonth.value.split('-').map(Number);
@@ -148,12 +209,10 @@ const onSelectDay = (day) => {
     if (!day || calendarDays.value.some((calendarDay) => calendarDay.date === day && calendarDay.disabled)) return
 
     const [year, month] = currentYearMonth.value.split('-');
-    // const dayPart = day.split('-')[2] || day
     const formatted = `${year}/${month.padStart(2, '0')}/${day.split('-')[2].padStart(2, '0')}`;
 
     if (props.mode === 'single') {
         selectedDate.value = formatted;
-        dateModel.value = formatted;
     } else {
         if (!range.value.start || (range.value.start && range.value.end)) {
             range.value = { start: formatted, end: null };
@@ -164,13 +223,17 @@ const onSelectDay = (day) => {
                 range.value = { start: range.value.start, end: formatted };
             }
         }
-        rangeModel.value = range.value
     }
+    if (!props.showActions) commitSelection()
 }
 
 watch(
     () => props.mode,
     (mode) => {
+        if (props.showActions) {
+            restoreSelection()
+            return
+        }
         if(mode === 'single') {
             range.value = { start: null, end: null }
         } else {
@@ -178,6 +241,11 @@ watch(
         }
     }
 )
+
+watch(() => props.showActions, () => {
+    restoreSelection()
+    scheduleTodayRefresh()
+})
 
 const handleMonthSelected = (month) => {
     const [year] = currentYearMonth.value.split('-');
@@ -243,6 +311,33 @@ const toggleView = (view) => {
                 :current-year="currentDate"
                 @year-selected="handleYearSelected"
             />
+        </div>
+        <div v-if="showActions" class="vue-persia-datepicker__actions">
+            <div class="vue-persia-datepicker__action">
+                <slot name="confirm-button" :action="confirmSelection" :disabled="!canConfirm">
+                    <button
+                        type="button"
+                        class="vue-persia-datepicker__action-button vue-persia-datepicker__action-button--confirm"
+                        :disabled="!canConfirm"
+                        @click="confirmSelection"
+                    >تایید</button>
+                </slot>
+            </div>
+            <div class="vue-persia-datepicker__action">
+                <slot name="cancel-button" :action="cancelSelection" :disabled="false">
+                    <button type="button" class="vue-persia-datepicker__action-button" @click="cancelSelection">انصراف</button>
+                </slot>
+            </div>
+            <div class="vue-persia-datepicker__action">
+                <slot name="now-button" :action="selectNow" :disabled="nowDisabled">
+                    <button
+                        type="button"
+                        class="vue-persia-datepicker__action-button"
+                        :disabled="nowDisabled"
+                        @click="selectNow"
+                    >اکنون</button>
+                </slot>
+            </div>
         </div>
     </div>
 </template>

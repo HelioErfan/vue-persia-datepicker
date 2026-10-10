@@ -11,6 +11,10 @@
     --calendar-current: #335CFF;
     --calendar-month_Year_item-bg-color: #F5F7FA;
     --calendar-in-range-bg-color: #EBF1FF;
+    --calendar-action-bg-color: #F5F5F5;
+    --calendar-action-text-color: #111516;
+    --calendar-confirm-bg-color: #111516;
+    --calendar-confirm-text-color: #ffffff;
 }
 
 .fade-enter-active, .fade-leave-active {
@@ -209,5 +213,49 @@
 .vue-persia-datepicker__calendar_days .vue-persia-datepicker__calendar_days_weekdays .vue-persia-datepicker__calendar_day_disabled {
     background-color: var(--calendar-header-bg-color) !important;
     color: var(--calendar-disabled-text-color, #8e939d) !important;
+    cursor: not-allowed;
+}
+
+.vue-persia-datepicker__actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 16px;
+    direction: rtl;
+}
+
+.vue-persia-datepicker__action {
+    display: flex;
+    min-width: 0;
+}
+
+.vue-persia-datepicker__action-button {
+    width: 100%;
+    min-height: 40px;
+    padding: 8px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background-color: var(--calendar-action-bg-color);
+    color: var(--calendar-action-text-color);
+    font: inherit;
+    cursor: pointer;
+}
+
+.vue-persia-datepicker__action-button--confirm {
+    background-color: var(--calendar-confirm-bg-color);
+    color: var(--calendar-confirm-text-color);
+}
+
+.vue-persia-datepicker__action-button:not(:disabled):hover {
+    border-color: var(--calendar-border-color);
+}
+
+.vue-persia-datepicker__action-button:focus-visible {
+    outline: 2px solid var(--calendar-current);
+    outline-offset: 2px;
+}
+
+.vue-persia-datepicker__action-button:disabled {
+    opacity: 0.45;
     cursor: not-allowed;
 }

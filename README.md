@@ -171,6 +171,9 @@ Either value can be `null` until it is selected.
 
   `disable`            String or Array `[]`                      English weekday names
                                                                  to disable
+
+  `showActions`        Boolean         `false`                   Show confirm, cancel,
+                                                                 and now buttons
   -----------------------------------------------------------------------------------
 
 Use `disable="Friday"` to make every Friday unavailable, or pass another
@@ -186,6 +189,69 @@ Accepted names are `Saturday`, `Sunday`, `Monday`, `Tuesday`, `Wednesday`,
 `Thursday`, and `Friday` (case-insensitive). Disabled dates remain visible
 but cannot be selected as a single date or range endpoint. A range can span
 disabled weekdays.
+
+------------------------------------------------------------------------
+
+## Optional selection actions
+
+Enable `showActions` to display three buttons below the calendar: **تایید**
+(confirm), **انصراف** (cancel), and **اکنون** (now).
+
+```vue
+<DatePicker v-model:date="selectedDate" show-actions />
+<DatePicker v-model:range="selectedRange" mode="range" show-actions />
+```
+
+With actions enabled, clicking a day previews a selection inside the
+calendar. The bound model changes only when **confirm** is pressed. Single
+mode requires a selected date; range mode requires both endpoints. Clicking
+the same day twice creates a valid one-day range.
+
+**Cancel** discards the preview and restores the last confirmed or externally
+supplied selection, including an initial `defaultDate` or `defaultRange`.
+It returns to the days view and the restored selection's month, or today's
+month when the selection is empty. The calendar remains visible after
+confirming or cancelling.
+
+**Now** previews today's Jalali date in `Asia/Tehran` and displays its month.
+In range mode it starts a new range at today with `end: null`; select an end
+date before confirming. Now and confirm respect `disable`; a range may still
+span disabled weekdays.
+
+External model updates replace the preview. Changing `mode` or `showActions`
+discards unconfirmed changes. With `showActions` omitted or set to `false`,
+day selections continue updating the model immediately.
+
+### Custom action buttons
+
+Replace each entire button using its named scoped slot:
+
+| Slot | Scope |
+| --- | --- |
+| `confirm-button` | `{ action, disabled }` |
+| `cancel-button` | `{ action, disabled }` |
+| `now-button` | `{ action, disabled }` |
+
+Call `action()` to run the built-in behavior and bind `disabled` to your
+button. The action itself also checks whether it is allowed. Slots are
+rendered only while `showActions` is enabled; omitted slots use the default
+buttons. Custom buttons provide their own styling and keyboard focus state.
+
+```vue
+<DatePicker v-model:date="selectedDate" show-actions>
+  <template #confirm-button="{ action, disabled }">
+    <button type="button" class="my-confirm-button" :disabled="disabled" @click="action">
+      ثبت تاریخ
+    </button>
+  </template>
+  <template #cancel-button="{ action, disabled }">
+    <button type="button" :disabled="disabled" @click="action">لغو</button>
+  </template>
+  <template #now-button="{ action, disabled }">
+    <button type="button" :disabled="disabled" @click="action">امروز</button>
+  </template>
+</DatePicker>
+```
 
 ------------------------------------------------------------------------
 
@@ -216,6 +282,10 @@ disabled weekdays.
   --calendar-current: #335CFF;
   --calendar-disabled-text-color: #8e939d;
   --calendar-month-year-item-bg-color: #F5F7FA;
+  --calendar-action-bg-color: #F5F5F5;
+  --calendar-action-text-color: #111516;
+  --calendar-confirm-bg-color: #111516;
+  --calendar-confirm-text-color: #ffffff;
 }
 ```
 
