@@ -6,6 +6,7 @@ import CalendarHeader from './CalendarHeader.vue'
 import CalendarDays from './CalendarDays.vue';
 import MonthSelector from './MonthSelector.vue'
 import YearSelector from './YearSelector.vue';
+import { normalizeDate, normalizeConstraints, isDateDisabled as matchesDisabledDate } from './dateConstraints.js'
 
 const dateModel = defineModel('date',{ type: String, default: null })
 const rangeModel = defineModel('range', { type: Object, default: () => ({ start: null, end: null }) })
@@ -18,6 +19,18 @@ const props = defineProps({
     },
     disable: {
         type: [String, Array],
+        default: () => []
+    },
+    min: {
+        type: [String, Date],
+        default: null
+    },
+    max: {
+        type: [String, Date],
+        default: null
+    },
+    disabledDates: {
+        type: [String, Date, Object, Array],
         default: () => []
     },
     mode: {
@@ -57,13 +70,12 @@ const currentYearMonth = ref(yearMonthOf(props.mode === 'range' && range.value.s
 
 const calendar = computed(() => jalali.calendar(currentYearMonth.value))
 
-const weekdayNames = ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday']
-const disabledWeekdays = computed(() => {
-    const names = Array.isArray(props.disable) ? props.disable : [props.disable]
-    return new Set(names.map((name) =>
-        typeof name === 'string' ? weekdayNames.indexOf(name.trim().toLowerCase()) : -1
-    ))
-})
+const constraints = computed(() => normalizeConstraints({
+    min: props.min,
+    max: props.max,
+    disabledDates: props.disabledDates,
+    disable: props.disable
+}))
 
 const dateHeaderTitle = computed(() => calendar.value.title.split(' '))
 
@@ -100,11 +112,7 @@ watch(
     }
 )
 
-const isDateDisabled = (date) => {
-    if (!date || disabledWeekdays.value.size === 0) return false
-    const weekday = moment(date, 'jYYYY/jMM/jDD').day()
-    return disabledWeekdays.value.has((weekday + 1) % 7)
-}
+const isDateDisabled = (date) => matchesDisabledDate(date, constraints.value)
 
 const canConfirm = computed(() => {
     if (props.mode === 'single') return !!selectedDate.value && !isDateDisabled(selectedDate.value)
@@ -131,9 +139,12 @@ onUnmounted(() => clearTimeout(todayRefreshTimer))
 
 const commitSelection = () => {
     if (props.mode === 'single') {
+        if (isDateDisabled(selectedDate.value)) return
         committedDate.value = selectedDate.value
         dateModel.value = selectedDate.value
     } else {
+        const { start, end } = range.value
+        if (isDateDisabled(start) || (end && (start > end || isDateDisabled(end)))) return
         committedRange.value = copyRange(range.value)
         rangeModel.value = copyRange(range.value)
     }
@@ -193,7 +204,7 @@ const calendarDays = computed( () => {
         days.push({
             day,
             date: dateStr,
-            disabled: disabledWeekdays.value.has((firstDayOfWeek + day - 1) % 7)
+            disabled: isDateDisabled(dateStr.replace(/-/g, '/'))
         })
     }
 
@@ -205,16 +216,14 @@ const calendarDays = computed( () => {
 });
 
 const onSelectDay = (day) => {
-
-    if (!day || calendarDays.value.some((calendarDay) => calendarDay.date === day && calendarDay.disabled)) return
-
-    const [year, month] = currentYearMonth.value.split('-');
-    const formatted = `${year}/${month.padStart(2, '0')}/${day.split('-')[2].padStart(2, '0')}`;
+    if (typeof day !== 'string' || !calendarDays.value.some((cell) => cell.day && cell.date === day)) return
+    const formatted = normalizeDate(day.replace(/-/g, '/'))
+    if (isDateDisabled(formatted)) return
 
     if (props.mode === 'single') {
         selectedDate.value = formatted;
     } else {
-        if (!range.value.start || (range.value.start && range.value.end)) {
+        if (!range.value.start || range.value.end || isDateDisabled(range.value.start)) {
             range.value = { start: formatted, end: null };
         } else if (!range.value.end) {
             if (formatted < range.value.start) {
